@@ -1,19 +1,31 @@
 'use client';
 import { Check } from "@gravity-ui/icons";
 import { Button, Description, FieldError, Form, Input, Label, TextField } from "@heroui/react";
+import { authClient } from "../lib/auth-client";
+
 
 
 const SignupPage = () => {
-    const onSubmit = (e) => {
+
+    const onSubmit = async (e) => {
         e.preventDefault();
-        // const formData = new FormData(e.currentTarget);
-        // const data = {};
-        // // Convert FormData to plain object
-        // formData.forEach((value, key) => {
-        //     data[key] = value.toString();
-        // });
-        // alert(`Form submitted with: ${JSON.stringify(data, null, 2)}`);
+
+
+        const formData = new FormData(e.currentTarget);
+
+     
+        const userData = Object.fromEntries(formData.entries());
+
+        console.log('submitted data', userData);
+
+        const {data,error}= await authClient.signUp.email({
+            email:userData.email,
+            password:userData.password,
+        });
+
+        console.log("signup response: ",{data,error})
     };
+
     return (
         <div className="flex h-screen flex-col items-center justify-center gap-6">
             <h1>Please Signup here</h1>
@@ -31,7 +43,7 @@ const SignupPage = () => {
                         }}
                     >
                         <Label>Email</Label>
-                        <Input placeholder="john@example.com" />
+                        <Input name="email" placeholder="Enter your mail" />
                         <FieldError />
                     </TextField>
                     <TextField
@@ -53,7 +65,7 @@ const SignupPage = () => {
                         }}
                     >
                         <Label>Password</Label>
-                        <Input placeholder="Enter your password" />
+                        <Input name="password" placeholder="Enter your password" />
                         <Description>Must be at least 8 characters with 1 uppercase and 1 number</Description>
                         <FieldError />
                     </TextField>
